@@ -22,30 +22,30 @@ def polyfit(degree, plot=True):
     return p
 
 
-def get_rmse(y, y_fit):
-    return np.sqrt(metrics.mean_squared_error(y, y_fit))
+def get_mse(y, y_fit):
+    return metrics.mean_squared_error(y, y_fit)
 
 
 def fit_range(train_X, train_y, test_X, test_y, n):
-    rmse_list = []
+    mse_list = []
     for i in range(1, n):
         p = polyfit(i)
-        rmse_train = get_rmse(train_y, np.polyval(p, train_X))
-        rmse_test = get_rmse(test_y, np.polyval(p, test_X))
-        rmse_list.append([i, rmse_train, rmse_test])
+        mse_train = get_mse(train_y, np.polyval(p, train_X))
+        mse_test = get_mse(test_y, np.polyval(p, test_X))
+        mse_list.append([i, mse_train, mse_test])
 
-    rmse_df = pd.DataFrame(
-        rmse_list, columns=["degree", "rmse_train", "rmse_test"]
+    mse_df = pd.DataFrame(
+        mse_list, columns=["degree", "mse_train", "mse_test"]
     )
-    rmse_df["rmse_total"] = rmse_df.rmse_train + rmse_df.rmse_test
-    return rmse_df
+    mse_df["mse_total"] = mse_df.mse_train + mse_df.mse_test
+    return mse_df
 
 
-def plot_bias_variance(rmse_df):
+def plot_bias_variance(mse_df):
     plt.figure()
-    plt.plot(rmse_df.degree, rmse_df.rmse_train, label="train", color="r")
-    plt.plot(rmse_df.degree, rmse_df.rmse_test, label="test", color="g")
-    plt.plot(rmse_df.degree, rmse_df.total_error, label="total", color="b")
+    plt.plot(mse_df.degree, mse_df.mse_train, label="train", color="r")
+    plt.plot(mse_df.degree, mse_df.mse_test, label="test", color="g")
+    plt.plot(mse_df.degree, mse_df.mse_total, label="total", color="b")
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
     plt.tight_layout()
 
@@ -63,5 +63,5 @@ if __name__ == '__main__':
         curve.x, curve.y, test_size=0.40, random_state=100
     )
 
-    rmse_df = fit_range(train_X, train_y, test_X, test_y, 30)
-    plot_bias_variance(rmse_df)
+    mse_df = fit_range(train_X, train_y, test_X, test_y, 30)
+    plot_bias_variance(mse_df)
